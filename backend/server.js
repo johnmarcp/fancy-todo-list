@@ -1,18 +1,28 @@
 require("dotenv").config();
 
 const express = require("express");
+const mongoose = require("mongoose");
+const todosRoutes = require("./routes/todos");
+const usersRoutes = require("./routes/users");
 
 //app
 const app = express();
 
-//route
-app.get("/", (req, res) => {
-  res.json({
-    user: "John Doe",
-    age: 16,
-  });
-});
+//middleware
+app.use(express.json());
 
-app.listen(process.env.PORT, () => {
-  console.log("listening to port", process.env.PORT);
-});
+//route
+app.use("/todos", todosRoutes);
+app.use("/users", usersRoutes);
+
+//db
+mongoose
+  .connect(process.env.URI)
+  .then(() => {
+    app.listen(process.env.PORT, () => {
+      console.log("listening to port", process.env.PORT);
+    });
+  })
+  .catch((error) => {
+    console.log(error);
+  });
